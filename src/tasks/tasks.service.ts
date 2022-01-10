@@ -31,7 +31,7 @@ async getTaskById(id:number):Promise<task>{
 }
 
 
-async upadateTaskStatus(id:number, status: TaskStatus,):Promise<task>{
+async updateTaskStatus(id:number, status: TaskStatus,):Promise<task>{
 
     const task = await this.getTaskById(id)
     task.status = status
