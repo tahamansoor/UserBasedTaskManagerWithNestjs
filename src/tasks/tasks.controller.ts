@@ -8,10 +8,13 @@ import { TasksService } from './tasks.service';
 import { AuthGuard} from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 
 @Controller('tasks')
 @UseGuards(AuthGuard())
+@ApiBearerAuth()
+
 export class TasksController {
     constructor(private tasksService:TasksService){}
 
@@ -26,16 +29,20 @@ export class TasksController {
     }
     
     @Get('/:id')
-    getTaskById(@Param('id',ParseIntPipe) id:number,):Promise<task>{
-       return this.tasksService.getTaskById(id);
+    getTaskById(@Param('id',ParseIntPipe) id:number,
+    @GetUser()user:User
+    ):Promise<task>{
+       return this.tasksService.getTaskById(id,user);
 
 
 
     }
 
     @Delete('/:id')
-    deleteTask(@Param('id',ParseIntPipe) id:number,):void{
-      this.tasksService.deleteTask(id);
+    deleteTask(@Param('id',ParseIntPipe) id:number,
+    @GetUser()user:User
+    ):void{
+      this.tasksService.deleteTask(id,user);
     }
  
     @Post()
@@ -49,12 +56,14 @@ export class TasksController {
     }
 
 
-    @Patch('/:id/status')
+    @Patch('/:id')
     updateTaskStatus(
-       @Param('id', ParseIntPipe)id:number,
        @Body('status', TaskStatusValidationPipe)status:TaskStatus,
+       @Param('id', ParseIntPipe)id:number,
+       @GetUser()user:User
+      
        ):Promise<task>{
-          return this.tasksService.updateTaskStatus(id,status);
+          return this.tasksService.updateTaskStatus(id,status,user);
 
      
           
